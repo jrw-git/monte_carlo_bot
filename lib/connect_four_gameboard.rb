@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Gameboard
 
 #attr_reader :board, :height, :width, :turns, :last_move_array
@@ -7,10 +9,11 @@ attr_reader :turn
   DefaultSymbol = 0
   DefaultHeight = 6
   DefaultWidth = 7
+  DebugMessages = false
 
   public
 
-  def initialize(turn = 1, board_string = "default")
+  def initialize(board_string = "default", turn = 1)
     @height = DefaultHeight
     @width = DefaultWidth
     # fill the board with all blanks (DefaultSymbol here)
@@ -30,14 +33,20 @@ attr_reader :turn
     begin
       desired_move = Integer(desired_move)
     rescue
+      puts "Not an integer!" if DebugMessages
       return -1
     end
     # move must be between 0 and 6 inclusive
     if desired_move > 6 || desired_move < 0
+      puts "Not in the range of 0 to 6 inclusive!" if DebugMessages
       return -1
     end
     # column selected must have an empty slot
-    return -1 if !is_location_empty?(5, desired_move)
+    #return -1 if !is_location_empty?(5, desired_move)
+    if !is_location_empty?(5, desired_move)
+      puts "Not an empty column!" if DebugMessages
+      return -1
+    end
     # move is valid if it passes all these tests
     make_move(desired_move, active_player)
     return desired_move
@@ -52,17 +61,19 @@ attr_reader :turn
   end
 
   def to_s
-    puts "0 1 2 3 4 5 6"
-    puts "-------------"
+    board_string = "\n0 1 2 3 4 5 6\n"
+    board_string += "-------------\n"
     @board.each_index do |height_index|
       @board[height_index].each_index do |width_index|
         backwards_height = @height - height_index - 1
-        #print "#{@board[backwards_height][width_index]} "
-        print "#{@board[backwards_height][width_index]} (#{backwards_height},#{width_index}) "
+        board_string += "#{@board[backwards_height][width_index]} " if !DebugMessages
+        board_string += "#{@board[backwards_height][width_index]} (#{backwards_height},#{width_index}) " if DebugMessages
       end
-      puts
+      board_string.chop! # get rid of trailing space on last entry in row
+      board_string += "\n"
     end
-    puts "-------------"
+    board_string += "-------------\n"
+    return board_string
   end
 
   def is_there_a_win?(active_player)
@@ -104,9 +115,12 @@ attr_reader :turn
 
   def get_gameboard_from_string(string)
     # eg 0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,2,0,1,0,0,0;0,2,0,1,0,0,0
+    # split up the lines, then process each cell and convert to integer
     board_array = string.split(";")
     board_array.reverse!
-    new_board = board_array.map { |string| string.split(",") }
+    new_board = board_array.map do |string|
+      string.split(",").map {|element| element.to_i}
+    end
     return new_board
   end
 
@@ -190,7 +204,7 @@ attr_reader :turn
 
   def get_height_of_first_empty_location_in_column(column_number)
     # we know that there is an empty spot in this column
-    # it's been checked with is_move_valid
+    # it's been checked in the validation stage
     (0...@height).each do |height_index|
       return height_index if is_location_empty?(height_index, column_number)
     end

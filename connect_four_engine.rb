@@ -1,16 +1,20 @@
-require_relative "connect_four_gameboard"
-require_relative "player"
-require_relative "human_player"
-require_relative "monte_carlo_player"
+# encoding: UTF-8
+
+require_relative "lib/connect_four_gameboard"
+require_relative "lib/player"
+require_relative "lib/human_player"
+require_relative "lib/monte_carlo_player"
 
 class GameEngine
 
   public
 
-  def initialize(player_one, player_two)
-    @current_board = Gameboard.new
-    #@current_board = Gameboard.new(4, "0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,2,0,1,0,0,0;0,2,0,1,0,0,0")
-    #puts @current_board.to_ai_games
+  def initialize(player_one, player_two, board_string = "default", turn = 1)
+    if board_string == "default"
+      @current_board = Gameboard.new
+    else
+      @current_board = Gameboard.new(board_string, turn)
+    end
     @current_player = player_one
     @next_player = player_two
   end
@@ -70,8 +74,13 @@ class GameEngine
 
 end
 
-player_one = HumanPlayer.new('1')
-player_two = HumanPlayer.new('2')
-#player_two = MonteCarloPlayer.new('2')
-our_game = GameEngine.new(player_one, player_two)
-our_game.run_game
+# only run this code if we are executing THIS file specifically
+# ie, don't run it when performing tests or if it's included otherwise
+if __FILE__ == $0
+  test_board_string = "0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1"
+  player_one = HumanPlayer.new('1')
+  player_two = HumanPlayer.new('2')
+  player_two = MonteCarloPlayer.new('2')
+  our_game = GameEngine.new(player_one, player_two)
+  our_game.run_game
+end

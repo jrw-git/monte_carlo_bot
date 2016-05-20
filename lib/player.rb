@@ -1,3 +1,4 @@
+# encoding: UTF-8
 
 class Player
 
@@ -10,7 +11,7 @@ class Player
   end
 
   def get_move(current_board)
-
+    return Random.rand(7)
   end
 
   def to_s
