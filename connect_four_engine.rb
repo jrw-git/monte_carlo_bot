@@ -20,14 +20,18 @@ class GameEngine
   end
 
   def run_game
-    end_of_game = false
-    until end_of_game
+    end_of_game = 0
+    until end_of_game != 0
       puts "Turn #{@current_board.turn}, current player #{@current_player}"
       puts self.to_s
       end_of_game = get_turn_from_player(@current_player)
-      end_turn if !end_of_game
+      end_turn if end_of_game == 0
     end
-    display_end_of_game
+    if end_of_game == 1
+      display_end_of_game
+    else
+      display_tied_game
+    end
   end
 
   def to_s
@@ -35,6 +39,17 @@ class GameEngine
   end
 
   private
+
+  def display_tied_game
+    puts
+    puts "-"*50
+    puts "Tied game, no more possible moves!"
+    puts "Final Gameboard:"
+    puts self.to_s
+    puts "Good playing, both players!"
+    puts "-"*50
+    puts "Exiting game..."
+  end
 
   def display_end_of_game
     puts
@@ -52,7 +67,7 @@ class GameEngine
     desired_move = active_player.get_move(@current_board)
     if desired_move == 'u'
       @current_board.undo_last_move
-      return false
+      return 0
     end
     validated_move = @current_board.validate_and_move(desired_move, active_player)
     if validated_move == -1
@@ -80,7 +95,7 @@ if __FILE__ == $0
   test_board_string = "0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1"
   player_one = HumanPlayer.new('1')
   player_two = HumanPlayer.new('2')
-  player_two = MonteCarloPlayer.new('2')
+  #player_two = MonteCarloPlayer.new('2')
   our_game = GameEngine.new(player_one, player_two)
   our_game.run_game
 end

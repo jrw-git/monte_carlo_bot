@@ -13,11 +13,11 @@
 
 
 Use ruby to run "connect_four_engine.rb" for single player Connect Four.
-Currently player one is human and player two is a monte carlo bot
+Currently player one is human and player two is a monte carlo bot.
 
 
 Use ruby to run "game_parser.rb" to activate the parser. It waits silently for input.
-The parser currently runs the monte carlo bot on all input
+The parser currently runs the monte carlo bot on all input.
 
 
-If using this bot for theaigames.com, remove connect_four_engine.rb when uploading
+If using this bot for theaigames.com, remove connect_four_engine.rb when uploading.

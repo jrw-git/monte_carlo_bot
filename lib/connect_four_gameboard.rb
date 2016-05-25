@@ -79,6 +79,19 @@ attr_reader :turn
   def is_there_a_win?(active_player)
     # we check the squares connecting in a line from last move
     # ie the horizontal/vertical and the two diagonals
+    return 0 if @turn < 7
+    last_height = @last_move_array[-1]["height"]
+    last_width = @last_move_array[-1]["width"]
+    return 1 if check_horizontal_and_vertical(last_height, last_width, active_player)
+    return 1 if check_diagonal_one(last_height, last_width, active_player)
+    return 1 if check_diagonal_two(last_height, last_width, active_player)
+    return -1 if @turn > 42
+    return 0 # if we haven't found a win yet, there is no win to be found
+  end
+
+  def old_is_there_a_win?(active_player)
+    # we check the squares connecting in a line from last move
+    # ie the horizontal/vertical and the two diagonals
     return false if @turn < 7
     last_height = @last_move_array[-1]["height"]
     last_width = @last_move_array[-1]["width"]
