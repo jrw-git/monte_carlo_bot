@@ -4,7 +4,7 @@ class Gameboard
 
 #attr_reader :board, :height, :width, :turns, :last_move_array
 
-attr_reader :turn
+attr_reader :turn, :last_move_array, :board
 
   DefaultSymbol = 0
   DefaultHeight = 6
@@ -24,6 +24,18 @@ attr_reader :turn
     end
     @turn = turn
     @last_move_array = Array.new
+  end
+
+  def initialize_dup(other)
+    @height = DefaultHeight
+    @width = DefaultWidth
+    # fill the board with all blanks (DefaultSymbol here)
+    @board = Array.new(@height) { Array.new(@width, DefaultSymbol) }
+    other.board.each_index do |height_index|
+      @board[height_index] = other.board[height_index].dup
+    end
+    @turn = other.turn
+    @last_move_array = other.last_move_array.dup
   end
 
   def validate_and_move(desired_move, active_player)
@@ -73,23 +85,26 @@ attr_reader :turn
       board_string += "\n"
     end
     board_string += "-------------\n"
+    if true
+      board_string += "Board String: "
+      coded_string = ""
+      (0...@height).each do |h|
+        true_h = 5 - h
+        (0...@width).each do |w|
+          coded_string += "#{@board[true_h][w]},"
+        end
+        coded_string.chop!
+        coded_string += ";"
+      end
+      coded_string.chop!
+      board_string += coded_string
+      board_string += "\n"
+    end
     return board_string
   end
 
   def is_there_a_win?(active_player)
-    # we check the squares connecting in a line from last move
-    # ie the horizontal/vertical and the two diagonals
-    return 0 if @turn < 7
-    last_height = @last_move_array[-1]["height"]
-    last_width = @last_move_array[-1]["width"]
-    return 1 if check_horizontal_and_vertical(last_height, last_width, active_player)
-    return 1 if check_diagonal_one(last_height, last_width, active_player)
-    return 1 if check_diagonal_two(last_height, last_width, active_player)
-    return -1 if @turn > 42
-    return 0 # if we haven't found a win yet, there is no win to be found
-  end
-
-  def old_is_there_a_win?(active_player)
+    # returning true is a win, false is no win seen
     # we check the squares connecting in a line from last move
     # ie the horizontal/vertical and the two diagonals
     return false if @turn < 7
@@ -99,6 +114,14 @@ attr_reader :turn
     return true if check_diagonal_one(last_height, last_width, active_player)
     return true if check_diagonal_two(last_height, last_width, active_player)
     return false # if we haven't found a win yet, there is no win to be found
+  end
+
+  def is_there_a_tie?
+    if @turn > 42
+      return true
+    else
+      return false
+    end
   end
 
   def undo_last_move
@@ -139,7 +162,8 @@ attr_reader :turn
 
   def make_move(column_number, player_number)
     h = get_height_of_first_empty_location_in_column(column_number)
-    place_piece(h, column_number, player_number)
+    @last_move_array.push({"height" => h, "width" => column_number, "player" => player_number})
+    @board[h][column_number] = player_number
     @turn += 1
     return column_number
   end
@@ -226,11 +250,6 @@ attr_reader :turn
   def is_location_empty?(h, w)
       return true if @board[h][w] == DefaultSymbol
       return false
-  end
-
-  def place_piece(height, width, player_number)
-    @last_move_array.push({"height" => height, "width" => width, "player" => player_number})
-    @board[height][width] = player_number
   end
 
   def check_string_for_four_in_a_row(string_to_check, active_player)

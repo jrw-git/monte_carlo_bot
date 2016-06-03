@@ -132,6 +132,60 @@ class TestBoard < Minitest::Test
     assert_equal true, win
   end
 
+  def test_is_there_a_tie
+    @board = Gameboard.new
+    result = @board.validate_and_move(0, '1')
+    result = @board.validate_and_move(0, '2')
+    result = @board.validate_and_move(0, '1')
+    result = @board.validate_and_move(0, '2')
+    result = @board.validate_and_move(0, '1')
+    result = @board.validate_and_move(0, '2')
+    result = @board.validate_and_move(1, '1')
+    result = @board.validate_and_move(1, '2')
+    result = @board.validate_and_move(1, '1')
+    result = @board.validate_and_move(1, '2')
+    result = @board.validate_and_move(1, '1')
+    result = @board.validate_and_move(1, '2')
+    result = @board.validate_and_move(2, '1')
+    result = @board.validate_and_move(2, '2')
+    result = @board.validate_and_move(2, '1')
+    result = @board.validate_and_move(2, '2')
+    result = @board.validate_and_move(2, '1')
+    result = @board.validate_and_move(2, '2')
+    result = @board.validate_and_move(4, '1')
+    result = @board.validate_and_move(4, '2')
+    result = @board.validate_and_move(4, '1')
+    result = @board.validate_and_move(4, '2')
+    result = @board.validate_and_move(4, '1')
+    result = @board.validate_and_move(4, '2')
+    result = @board.validate_and_move(5, '1')
+    result = @board.validate_and_move(5, '2')
+    result = @board.validate_and_move(5, '1')
+    result = @board.validate_and_move(5, '2')
+    result = @board.validate_and_move(5, '1')
+    result = @board.validate_and_move(5, '2')
+    result = @board.validate_and_move(6, '1')
+    result = @board.validate_and_move(6, '2')
+    result = @board.validate_and_move(6, '1')
+    result = @board.validate_and_move(6, '2')
+    result = @board.validate_and_move(6, '1')
+    result = @board.validate_and_move(6, '2')
+    result = @board.validate_and_move(3, '2')
+    result = @board.validate_and_move(3, '1')
+    result = @board.validate_and_move(3, '2')
+    result = @board.validate_and_move(3, '1')
+    result = @board.validate_and_move(3, '2')
+    assert_equal(@board.is_there_a_tie?, false)
+    result = @board.validate_and_move(3, '1')
+    assert_equal @board.turn, 43
+    assert_equal result, 3
+    assert_equal(@board.is_there_a_tie?, true)
+    result = @board.validate_and_move(3, '1')
+    assert_equal result, -1
+    assert_equal @board.turn, 43
+    assert_equal(@board.is_there_a_tie?, true)
+  end
+
   def test_undo_last_move
     @board = Gameboard.new
     # test that when we undo a move, the turn counter is decremented
