@@ -213,11 +213,35 @@ class TestBoard < Minitest::Test
     # test that a partly filled board matches what it 'should' look like
     partly_filled_board_string = "0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1"
     @board = Gameboard.new(partly_filled_board_string, 10)
-    proper_string = "\n0 1 2 3 4 5 6\n-------------\n0 2 0 0 0 0 2\n0 1 0 0 0 0 1\n0 2 0 0 0 0 2\n0 1 0 0 0 0 1\n0 2 0 0 0 0 2\n0 1 0 0 0 0 1\n-------------\n"
+    proper_string = "\n"
+    proper_string += " Column Number \n"
+    proper_string += " 0 1 2 3 4 5 6 \n"
+    proper_string += "+-------------+\n"
+    proper_string += "|. 2 . . . . 2|\n"
+    proper_string += "|. 1 . . . . 1|\n"
+    proper_string += "|. 2 . . . . 2|\n"
+    proper_string += "|. 1 . . . . 1|\n"
+    proper_string += "|. 2 . . . . 2|\n"
+    proper_string += "|. 1 . . . . 1|\n"
+    proper_string += "+-------------+\n"
+    proper_string += " 0 1 2 3 4 5 6 \n"
+    proper_string += "Board String: 0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1\n"
     assert_equal proper_string, @board.to_s
     # test that a fresh board is aligned and all 0's etc
     @board = Gameboard.new
-    proper_string = "\n0 1 2 3 4 5 6\n-------------\n0 0 0 0 0 0 0\n0 0 0 0 0 0 0\n0 0 0 0 0 0 0\n0 0 0 0 0 0 0\n0 0 0 0 0 0 0\n0 0 0 0 0 0 0\n-------------\n"
+    proper_string = "\n"
+    proper_string += " Column Number \n"
+    proper_string += " 0 1 2 3 4 5 6 \n"
+    proper_string += "+-------------+\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "|. . . . . . .|\n"
+    proper_string += "+-------------+\n"
+    proper_string += " 0 1 2 3 4 5 6 \n"
+    proper_string += "Board String: 0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0\n"
     assert_equal proper_string, @board.to_s
   end
 

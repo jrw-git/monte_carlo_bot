@@ -66,11 +66,12 @@ class BotParser
     # 10000        500       player1,player2   player1   1        7    6
     case instruction_array[1]
     when "your_botid"
-      begin
-        @our_botid = Integer(instruction_array[2])
-      rescue
-        return handle_error_in_parsing(instruction_array)
-      end
+      @our_botid = instruction_array[2]
+      #begin
+      #  @our_botid = Integer(instruction_array[2])
+      #rescue
+      #  return handle_error_in_parsing(instruction_array)
+      #end
       @our_player = MonteCarloPlayer.new(@our_botid)
       $stderr.puts "Bot setup finished, name: #{@bot_name}"
       $stderr.puts @our_bot
@@ -92,9 +93,9 @@ class BotParser
     # update game field 0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0
     case instruction_array[2]
     when "round"
-      @turn = instruction_array[3]
+      @turn = instruction_array[3].to_i
     when "field"
-      @current_gameboard = Gameboard.new(@turn, @turn)
+      @current_gameboard = Gameboard.new(instruction_array[3])
     else
       return handle_error_in_parsing(instruction_array)
     end

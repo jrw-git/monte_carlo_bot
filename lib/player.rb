@@ -24,6 +24,10 @@ class Player
     # need to account for cases where the board is full?
     # shouldn't that never happen since the game is won/lost at that point?
     possible_moves = current_board.get_available_moves
+    if possible_moves == 0
+      puts "Error getting random move, none found, board state:"
+      puts current_board
+    end
     random_move = possible_moves[Random.rand(possible_moves.size)]
     return random_move
   end

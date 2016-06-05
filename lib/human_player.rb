@@ -17,8 +17,8 @@ class HumanPlayer < Player
   private
 
   def user_message(possible_moves)
-    string_to_display = "\nEnter the column where you want to place a piece (0-6)\n"
-    string_to_display += "Available moves are #{possible_moves}\n"
+    string_to_display = "\nEnter a column number to place a piece (0-6)\n"
+    string_to_display += "Available columns/moves are #{possible_moves}\n"
     string_to_display += "Your move?: "
     return string_to_display
   end

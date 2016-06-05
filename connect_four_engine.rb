@@ -9,11 +9,11 @@ class GameEngine
 
   public
 
-  def initialize(player_one, player_two, board_string = "default", turn = 1)
+  def initialize(player_one, player_two, board_string = "default")
     if board_string == "default"
       @current_board = Gameboard.new
     else
-      @current_board = Gameboard.new(board_string, turn)
+      @current_board = Gameboard.new(board_string)
     end
     @current_player = player_one
     @next_player = player_two
@@ -47,15 +47,27 @@ class GameEngine
       return false
     end
     if desired_move == 'l'
-      print "Enter turn #: "
-      turn = $stdin.gets.chomp.to_i
       print "Enter board string: "
       board_string = $stdin.gets.chomp
-      @current_board = Gameboard.new(board_string, turn)
+      @current_board = Gameboard.new(board_string)
       puts "Board loaded..."
       puts @current_board
-      desired_move = active_player.get_move(active_board)
-      #return false
+      if @current_board.turn % 2 == 0
+        puts "Detected that it is player 2's turn"
+        if active_player.symbol != '2'
+          puts "Swapping players..."
+          end_turn
+          active_player = @current_player
+        end
+      else
+        puts "Detected that it is player 1's turn"
+        if active_player.symbol != '1'
+          puts "Swapping players..."
+          end_turn
+          active_player = @current_player
+        end
+      end
+      return get_turn_from_player(active_player, @current_board)
     end
     validated_move = active_board.validate_and_move(desired_move, active_player)
     if validated_move == -1
@@ -115,6 +127,7 @@ end
 if __FILE__ == $0
   #test_board_string = "0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1;0,2,0,0,0,0,2;0,1,0,0,0,0,1"
   player_one = HumanPlayer.new('1')
+  #player_one = MonteCarloPlayer.new('1')
   player_two = HumanPlayer.new('2')
   player_two = MonteCarloPlayer.new('2')
   our_game = GameEngine.new(player_one, player_two)

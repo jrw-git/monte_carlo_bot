@@ -6,30 +6,33 @@ class Gameboard
 
 attr_reader :turn, :last_move_array, :board
 
-  DefaultSymbol = 0
+  DefaultSymbol = '.'
+  AIGamesDefaultSymbol = '0'
   DefaultHeight = 6
   DefaultWidth = 7
   DebugMessages = false
 
   public
 
-  def initialize(board_string = "default", turn = 1)
+  def initialize(board_string = "default")
     @height = DefaultHeight
     @width = DefaultWidth
+    @last_move_array = Array.new
     # fill the board with all blanks (DefaultSymbol here)
     if board_string == "default"
       @board = Array.new(@height) { Array.new(@width, DefaultSymbol) }
+      @turn = 1
     else
-      @board = get_gameboard_from_string(board_string)
+      # @turn is set in get_gameboard_from_string... clumsy
+      results_hash = get_gameboard_from_string(board_string)
+      @board = results_hash["board"]
+      @turn = results_hash["turn"]
     end
-    @turn = turn
-    @last_move_array = Array.new
   end
 
   def initialize_dup(other)
     @height = DefaultHeight
     @width = DefaultWidth
-    # fill the board with all blanks (DefaultSymbol here)
     @board = Array.new(@height) { Array.new(@width, DefaultSymbol) }
     other.board.each_index do |height_index|
       @board[height_index] = other.board[height_index].dup
@@ -54,7 +57,6 @@ attr_reader :turn, :last_move_array, :board
       return -1
     end
     # column selected must have an empty slot
-    #return -1 if !is_location_empty?(5, desired_move)
     if !is_location_empty?(5, desired_move)
       puts "Not an empty column!" if DebugMessages
       return -1
@@ -73,32 +75,25 @@ attr_reader :turn, :last_move_array, :board
   end
 
   def to_s
-    board_string = "\n0 1 2 3 4 5 6\n"
-    board_string += "-------------\n"
+    board_string = "\n"
+    board_string += " Column Number \n"
+    board_string += " 0 1 2 3 4 5 6 \n"
+    board_string += "+-------------+\n"
     @board.each_index do |height_index|
+      board_string += "|"
       @board[height_index].each_index do |width_index|
         backwards_height = @height - height_index - 1
         board_string += "#{@board[backwards_height][width_index]} " if !DebugMessages
         board_string += "#{@board[backwards_height][width_index]} (#{backwards_height},#{width_index}) " if DebugMessages
       end
       board_string.chop! # get rid of trailing space on last entry in row
-      board_string += "\n"
+      board_string += "|\n"
     end
-    board_string += "-------------\n"
+    board_string += "+-------------+\n"
+    board_string += " 0 1 2 3 4 5 6 \n"
     if true
       board_string += "Board String: "
-      coded_string = ""
-      (0...@height).each do |h|
-        true_h = 5 - h
-        (0...@width).each do |w|
-          coded_string += "#{@board[true_h][w]},"
-        end
-        coded_string.chop!
-        coded_string += ";"
-      end
-      coded_string.chop!
-      board_string += coded_string
-      board_string += "\n"
+      board_string += to_ai_games + "\n"
     end
     return board_string
   end
@@ -108,6 +103,11 @@ attr_reader :turn, :last_move_array, :board
     # we check the squares connecting in a line from last move
     # ie the horizontal/vertical and the two diagonals
     return false if @turn < 7
+    if @last_move_array.size == 0
+      # if there's no previous moves, we just got handed a playable board
+      # it is thus not won
+      return false
+    end
     last_height = @last_move_array[-1]["height"]
     last_width = @last_move_array[-1]["width"]
     return true if check_horizontal_and_vertical(last_height, last_width, active_player)
@@ -138,7 +138,11 @@ attr_reader :turn, :last_move_array, :board
     (0...@height).each do |h|
       true_h = 5 - h
       (0...@width).each do |w|
-        ai_games_string += @board[true_h][w].to_s + ","
+        if @board[true_h][w] == DefaultSymbol
+          ai_games_string += AIGamesDefaultSymbol + ","
+        else
+          ai_games_string += @board[true_h][w].to_s + ","
+        end
       end
       ai_games_string.chop!
       ai_games_string += ';'
@@ -154,10 +158,26 @@ attr_reader :turn, :last_move_array, :board
     # split up the lines, then process each cell and convert to integer
     board_array = string.split(";")
     board_array.reverse!
+    turn = 1
     new_board = board_array.map do |string|
-      string.split(",").map {|element| element.to_i}
+      #string.split(",").map {|element| element.to_i}
+      string.split(",").map do |element|
+        if element == AIGamesDefaultSymbol
+          DefaultSymbol
+        else
+          turn += 1
+          element
+        end
+      end
     end
-    return new_board
+    puts "Turns found loading board: #{turn}"
+    if turn % 2 == 0
+      puts "Detected that it is player 2's turn"
+    else
+      puts "Detected that it is player 1's turn"
+    end
+    results_hash = {"board" => new_board, "turn" => turn}
+    return results_hash
   end
 
   def make_move(column_number, player_number)
@@ -248,8 +268,8 @@ attr_reader :turn, :last_move_array, :board
   end
 
   def is_location_empty?(h, w)
-      return true if @board[h][w] == DefaultSymbol
-      return false
+    return true if @board[h][w] == DefaultSymbol
+    return false
   end
 
   def check_string_for_four_in_a_row(string_to_check, active_player)

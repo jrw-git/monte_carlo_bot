@@ -33,7 +33,9 @@ class MonteCarloPlayer < Player
       move_hash[move] = { "plays" => 0, "wins" => 0, "losses" => 0, "ties" => 0 }
     end
     current_player = @symbol
-    (1..4000).each do |x|
+    start_time = Time.now
+    num_monte_iterations = 5000
+    (1..num_monte_iterations).each do |x|
       # test it out with monte carlo
       new_board = current_board.dup
       value_of_move = recursive_monte_carlo(new_board, current_player)
@@ -48,6 +50,8 @@ class MonteCarloPlayer < Player
         move_hash[move]["ties"] += 1
       end
     end
+    puts "Monte Carlo Sims done in: #{Time.now-start_time}, iterations: #{num_monte_iterations}"
+    puts "Iterations/second: #{num_monte_iterations/(Time.now-start_time)}"
     return get_best_monte_carlo_result(move_hash)
   end
 
@@ -55,15 +59,15 @@ class MonteCarloPlayer < Player
     # check if this is a win or tie and return the move back if it is
     other_player = change_active_player(active_player)
     if current_board.is_there_a_win?(other_player)
-      #puts "Win seen. Last Move: #{current_board.last_move_array[-1]["width"]}"
-      #puts current_board
       return {"move" => current_board.last_move_array[-1]["width"],
-        "player" => current_board.last_move_array[-1]["player"],
+        #{}"player" => current_board.last_move_array[-1]["player"],
+        "player" => other_player,
         "win" => true,
         "tie" => false}
     elsif current_board.is_there_a_tie?
       return {"move" => current_board.last_move_array[-1]["width"],
-        "player" => current_board.last_move_array[-1]["player"],
+        #{}"player" => current_board.last_move_array[-1]["player"],
+        "player" => other_player,
         "win" => false,
         "tie" => true}
     end
